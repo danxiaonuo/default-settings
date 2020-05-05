@@ -117,10 +117,6 @@ sed -i 's/cbi.submit\"] = true/cbi.submit\"] = \"1\"/g' /usr/lib/lua/luci/dispat
 
 echo 'hsts=0' > /root/.wgetrc
 
-# 增加acl访问权限设置
-mv /uola_tmp/*.json /usr/share/rpcd/acl.d/
-rm -rf /share/rpcd/acl.d/*
-
 rm -rf /tmp/luci-modulecache/
 rm -f /tmp/luci-indexcache
 
