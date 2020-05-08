@@ -63,7 +63,6 @@ uci set wireless.default_radio1.key='password'
 uci set wireless.default_radio1.ieee80211k='1'
 uci set wireless.default_radio1.ieee80211w='1'
 uci commit wireless
-wifi down && wifi up
 
 # fstab设置
 uci set fstab.@global[0].anon_mount=1
