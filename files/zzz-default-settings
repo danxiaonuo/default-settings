@@ -22,6 +22,8 @@ uci set network.globals.ula_prefix="ddaa:6666:8888::/48"
 uci set network.lan.ip6assign='64'
 # 使用内置的 IPv6 管理
 uci set dhcp.lan.ra_management='1'
+# 设置wan口主机名称
+uci set network.wan.hostname='danxiaonuo'
 uci commit network
 
 # dhcp设置
