@@ -104,6 +104,19 @@ uci set samba.@samba[0].name='danxiaonuo'
 uci set samba.@samba[0].description='danxiaonuo'
 uci commit samba
 
+# mwan3设置
+uci set mwan3.wan.enabled='1'
+uci set mwan3.wan.family='ipv4'
+uci set mwan3.wan.initial_state='online'
+uci set mwan3.wan.track_ip='114.114.114.114'
+uci set mwan3.wan.flush_conntrack='ifup'
+uci set mwan3.wan6.enabled='1'
+uci set mwan3.wan6.family='ipv6'
+uci set mwan3.wan6.initial_state='online'
+uci set mwan3.wan6.track_ip='240C::6666'
+uci set mwan3.wan6.flush_conntrack='ifup'
+uci commit mwan3
+
 # 芝麻开门
 echo 0xDEADBEEF > /etc/config/google_fu_mode
 
