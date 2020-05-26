@@ -150,7 +150,7 @@ sed -i "s/# //g" /etc/opkg/distfeeds.conf
 sed -i 's#downloads.openwrt.org#mirrors.ustc.edu.cn/lede#g' /etc/opkg/distfeeds.conf
 
 # 防火墙设置
-echo "iptables -t nat -A POSTROUTING -s $(uci get network.lan.ipaddr) -j MASQUERADE" > /etc/firewall.user
+echo "iptables -t nat -A POSTROUTING -s $(uci get network.lan.ipaddr)/24 -j MASQUERADE" > /etc/firewall.user
 echo "ip6tables -t nat -A POSTROUTING -s $(uci get network.globals.ula_prefix) -j MASQUERADE" >> /etc/firewall.user
 echo "iptables -t nat -A PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 53" >> /etc/firewall.user
 echo "iptables -t nat -A PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 53" >> /etc/firewall.user
