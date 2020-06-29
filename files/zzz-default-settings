@@ -147,7 +147,7 @@ ln -sf /sbin/ip /usr/bin/ip
 # 替换源地址
 sed -i 's/http:/https:/g' /etc/opkg/distfeeds.conf
 sed -i "s/# //g" /etc/opkg/distfeeds.conf
-sed -i 's#downloads.openwrt.org#mirrors.ustc.edu.cn/lede#g' /etc/opkg/distfeeds.conf
+sed -i 's#downloads.openwrt.org#mirrors.cloud.tencent.com/lede#g' /etc/opkg/distfeeds.conf
 
 # 防火墙设置
 echo "iptables -t nat -A POSTROUTING -s $(uci get network.lan.ipaddr)/24 -j MASQUERADE" > /etc/firewall.user
