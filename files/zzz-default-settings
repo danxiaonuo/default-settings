@@ -163,7 +163,6 @@ echo "log-facility=/dev/null" >> /etc/dnsmasq.conf
 sed -i 's/cbi.submit\"] = true/cbi.submit\"] = \"1\"/g' /usr/lib/lua/luci/dispatcher.lua
 
 echo 'hsts=0' > /root/.wgetrc
-echo '*/1 * * * * /bin/sh /etc/hotplug.d/net/01-smartdns' >> /etc/crontabs/root
 
 rm -rf /tmp/luci-modulecache/
 rm -f /tmp/luci-indexcache
