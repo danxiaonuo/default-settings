@@ -170,9 +170,10 @@ sed -i 's/cbi.submit\"] = true/cbi.submit\"] = \"1\"/g' /usr/lib/lua/luci/dispat
 
 echo 'hsts=0' > /root/.wgetrc
 
-sed -i 's/LuCI openwrt-18.06 branch/LuCI 18.06 by uola/g' /usr/lib/lua/luci/version.lua
+sed -i '/luciname/d' /usr/lib/lua/luci/version.lua
+echo 'luciname    = "LuCI by Uola"' >> /usr/lib/lua/luci/version.lua
 sed -i '/luciversion/d' /usr/lib/lua/luci/version.lua
-echo 'luciversion = "Mod20.08 by uola"' >> /usr/lib/lua/luci/version.lua
+echo 'luciversion = "R1.1.1"' >> /usr/lib/lua/luci/version.lua
 
 rm -rf /tmp/luci-modulecache/
 rm -f /tmp/luci-indexcache
