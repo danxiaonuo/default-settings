@@ -11,7 +11,7 @@ uci commit luci
 
 uci set system.@system[0].timezone=CST-8
 uci set system.@system[0].zonename=Asia/Shanghai
-uci set system.@system[0].hostname=danxiaonuo
+uci set system.@system[0].hostname=Uola
 uci commit system
 
 # 设置默认管理IP地址
