@@ -175,6 +175,11 @@ echo 'luciname    = "LuCI by Uola"' >> /usr/lib/lua/luci/version.lua
 sed -i '/luciversion/d' /usr/lib/lua/luci/version.lua
 echo 'luciversion = "R1.1.1"' >> /usr/lib/lua/luci/version.lua
 
+# 设置SSH
+sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+sed -i 's/#UseDNS yes$/UseDNS no/g' /etc/ssh/sshd_config
+/etc/init.d/sshd restart
+
 rm -rf /tmp/luci-modulecache/
 rm -f /tmp/luci-indexcache
 
