@@ -20,6 +20,8 @@ uci set network.lan.netmask='255.255.255.0'
 # IPV6设置
 uci set network.globals.ula_prefix="ddaa:8888:1111::/48"
 uci set network.lan.ip6assign='64'
+uci set network.lan.ip6hint='0'
+uci set network.lan.ip6ifaceid='::1'
 # 使用内置的 IPv6 管理
 uci set dhcp.lan.ra_management='1'
 # 设置wan口主机名称
@@ -154,6 +156,10 @@ sed -i '/openwrt_packages/ { s/snapshots/releases\/18.06.8/g; }'  /etc/opkg/dist
 # WIFI设置
 sed -i '/option disabled/d' /etc/config/wireless
 sed -i '/set wireless.radio${devidx}.disabled/d' /lib/wifi/mac80211.sh
+
+# 启动WIFI
+sed -i '/exit 0/i\# 启动WIFI\nnohup sleep 60 && /sbin/wifi reload &' package/base-files/files/etc/rc.local
+sed -i '/exit 0/i\# 启动MTWIFI\nnohup sleep 60 && /sbin/mtkwifi reload &' package/base-files/files/etc/rc.local
 
 # 防火墙设置
 echo "iptables -t nat -A POSTROUTING -s $(uci get network.lan.ipaddr)/24 -j MASQUERADE" > /etc/firewall.user
