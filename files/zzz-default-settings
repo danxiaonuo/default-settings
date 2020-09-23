@@ -22,11 +22,25 @@ uci set network.globals.ula_prefix="ddaa:8888:1111::/48"
 uci set network.lan.ip6assign='64'
 uci set network.lan.ip6hint='0'
 uci set network.lan.ip6ifaceid='::1'
-# 使用内置的 IPv6 管理
-uci set dhcp.lan.ra_management='1'
 # 设置wan口主机名称
 uci set network.wan.hostname='danxiaonuo'
 uci commit network
+
+# 启用客户端
+uci set dhcp.lan.start='0'
+# 客户数
+uci set dhcp.lan.limit='255'
+# 租期
+uci set dhcp.lan.leasetime='12h'
+# 使用内置的 IPv6 管理
+uci set dhcp.lan.ra_management='1'
+# 路由通告服务
+uci set dhcp.lan.ra='server'
+# DHCPv6 服务
+uci set dhcp.lan.dhcpv6='server'
+# 通告的 DNS 服务器
+uci set dhcp.lan.dns='ddaa:8888:1111::1'
+uci commit dhcp
 
 # dhcp设置
 uci set dhcp.lan.start='0'
