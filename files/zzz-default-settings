@@ -172,8 +172,8 @@ sed -i '/option disabled/d' /etc/config/wireless
 sed -i '/set wireless.radio${devidx}.disabled/d' /lib/wifi/mac80211.sh
 
 # 启动WIFI
-sed -i '/exit 0/i\# 启动WIFI\nnohup sleep 60 && /sbin/wifi reload &' package/base-files/files/etc/rc.local
-sed -i '/exit 0/i\# 启动MTWIFI\nnohup sleep 60 && /sbin/mtkwifi reload &' package/base-files/files/etc/rc.local
+sed -i '/exit 0/i\# 启动WIFI\nnohup sleep 5 && /sbin/wifi reload &' package/base-files/files/etc/rc.local
+sed -i '/exit 0/i\# 启动MTWIFI\nnohup sleep 5 && /sbin/mtkwifi reload &' package/base-files/files/etc/rc.local
 
 # 防火墙设置
 echo "iptables -t nat -A POSTROUTING -s $(uci get network.lan.ipaddr)/24 -j MASQUERADE" > /etc/firewall.user
