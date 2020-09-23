@@ -186,6 +186,10 @@ sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/ssh
 sed -i 's/#UseDNS yes$/UseDNS no/g' /etc/ssh/sshd_config
 /etc/init.d/sshd restart
 
+# smartdns自动检测
+chmod 775 /sbin/smartdns.sh
+sed -i '1 i\# smartdns自动检测\n*/1 * * * * /sbin/smartdns.sh' /etc/crontabs/root
+
 rm -rf /tmp/luci-modulecache/
 rm -f /tmp/luci-indexcache
 
