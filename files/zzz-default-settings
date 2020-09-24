@@ -171,10 +171,6 @@ sed -i '/openwrt_packages/ { s/snapshots/releases\/18.06.8/g; }'  /etc/opkg/dist
 sed -i '/option disabled/d' /etc/config/wireless
 sed -i '/set wireless.radio${devidx}.disabled/d' /lib/wifi/mac80211.sh
 
-# 启动WIFI
-sed -i '/exit 0/i\# 启动WIFI\nnohup sleep 5 && /sbin/wifi reload &' package/base-files/files/etc/rc.local
-sed -i '/exit 0/i\# 启动MTWIFI\nnohup sleep 5 && /sbin/mtkwifi reload &' package/base-files/files/etc/rc.local
-
 # 防火墙设置
 echo "iptables -t nat -A POSTROUTING -s $(uci get network.lan.ipaddr)/24 -j MASQUERADE" > /etc/firewall.user
 echo "ip6tables -t nat -A POSTROUTING -s $(uci get network.globals.ula_prefix) -j MASQUERADE" >> /etc/firewall.user
@@ -202,7 +198,8 @@ sed -i 's/#UseDNS yes$/UseDNS no/g' /etc/ssh/sshd_config
 
 # smartdns自动检测
 chmod 775 /sbin/smartdns.sh
-sed -i '1 i\# smartdns自动检测\n*/1 * * * * /sbin/smartdns.sh' /etc/crontabs/root
+echo -n '*/1 * * * * /sbin/smartdns.sh' > /etc/crontabs/root
+/etc/init.d/cron enable && /etc/init.d/cron restart
 
 rm -rf /tmp/luci-modulecache/
 rm -f /tmp/luci-indexcache
