@@ -198,8 +198,7 @@ sed -i 's/#UseDNS yes$/UseDNS no/g' /etc/ssh/sshd_config
 
 # smartdns自动检测
 chmod 775 /sbin/smartdns.sh
-echo -n '*/1 * * * * /sbin/smartdns.sh' > /etc/crontabs/root
-/etc/init.d/cron enable && /etc/init.d/cron restart
+sed -i '/exit 0/i\# smartdns自动检测\nbash /sbin/smartdns.sh' /etc/rc.local
 
 rm -rf /tmp/luci-modulecache/
 rm -f /tmp/luci-indexcache
