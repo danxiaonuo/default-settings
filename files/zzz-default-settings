@@ -19,10 +19,15 @@ uci commit system
 uci set network.lan.ipaddr='10.8.1.1'
 uci set network.lan.netmask='255.255.255.0'
 # IPV6设置
-uci set network.globals.ula_prefix="ddaa:8888:1111::/48"
+uci -q delete network.globals.ula_prefix
 uci set network.lan.ip6assign='64'
 uci set network.lan.ip6hint='0'
 uci set network.lan.ip6ifaceid='::1'
+uci set network.lan_ipv6=interface
+uci set network.lan_ipv6.proto='dhcpv6'
+uci set network.lan_ipv6.ifname='@lan'
+uci set network.lan_ipv6.reqaddress='try'
+uci set network.lan_ipv6.reqprefix='auto'
 # 设置wan口主机名称
 uci set network.wan.hostname='danxiaonuo'
 uci commit network
@@ -37,11 +42,21 @@ uci set dhcp.lan.leasetime='12h'
 # 使用内置的 IPv6 管理
 uci set dhcp.lan.ra_management='1'
 # 路由通告服务
-uci set dhcp.lan.ra='server'
+uci set dhcp.lan.ra='hybrid'
 # DHCPv6 服务
-uci set dhcp.lan.dhcpv6='server'
-# 通告的 DNS 服务器
-uci set dhcp.lan.dns='ddaa:8888:1111::1'
+uci set dhcp.lan.dhcpv6='hybrid'
+# NDP 代理
+uci set dhcp.lan.ndp='hybrid'
+# 通告的 IPV6 DNS 服务器
+uci set dhcp.lan.dns='240C::6666'
+uci set dhcp.wan6=dhcp
+uci set dhcp.wan6.interface='wan'
+uci set dhcp.wan6.dhcpv6='hybrid'
+uci set dhcp.wan6.ra='hybrid'
+uci set dhcp.wan6.ndp='hybrid'
+uci set dhcp.wan6.master='1'
+# 删除总是通告默认路由
+uci -q dhcp.lan.ra_default > /dev/null 2>&1
 uci commit dhcp
 
 # dnsmasq设置
@@ -64,7 +79,7 @@ uci set firewall.@defaults[0].fullcone='1'
 uci set firewall.@defaults[0].flow_offloading_hw='1'
 uci set firewall.@zone[0]=zone
 uci set firewall.@zone[0].name='lan'
-uci set firewall.@zone[0].network='lan'
+uci set firewall.@zone[0].network='lan lan_ipv6'
 uci set firewall.@zone[0].input='ACCEPT'
 uci set firewall.@zone[0].output='ACCEPT'
 uci set firewall.@zone[0].forward='ACCEPT'
