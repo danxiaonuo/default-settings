@@ -43,19 +43,19 @@ uci set dhcp.lan.leasetime='12h'
 # 使用内置的 IPv6 管理
 uci set dhcp.lan.ra_management='1'
 # 路由通告服务
-uci set dhcp.lan.ra='hybrid'
+uci set dhcp.lan.ra='relay'
 # DHCPv6 服务
-uci set dhcp.lan.dhcpv6='hybrid'
+uci set dhcp.lan.dhcpv6='relay'
 # NDP 代理
-uci set dhcp.lan.ndp='hybrid'
+uci set dhcp.lan.ndp='relay'
 # 通告的 IPV6 DNS 服务器
 uci set dhcp.lan.dns='240C::6666'
 # 设置 dhcp wan6
 uci set dhcp.wan6=dhcp
 uci set dhcp.wan6.interface='wan'
-uci set dhcp.wan6.dhcpv6='hybrid'
-uci set dhcp.wan6.ra='hybrid'
-uci set dhcp.wan6.ndp='hybrid'
+uci set dhcp.wan6.dhcpv6='relay'
+uci set dhcp.wan6.ra='relay'
+uci set dhcp.wan6.ndp='relay'
 uci set dhcp.wan6.master='1'
 # 删除总是通告默认路由
 uci -q dhcp.lan.ra_default > /dev/null 2>&1
