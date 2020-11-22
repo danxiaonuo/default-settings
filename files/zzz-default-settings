@@ -23,6 +23,7 @@ uci -q delete network.globals.ula_prefix
 uci set network.lan.ip6assign='64'
 uci set network.lan.ip6hint='0'
 uci set network.lan.ip6ifaceid='::1'
+# 新增lan_ipv6
 uci set network.lan_ipv6=interface
 uci set network.lan_ipv6.proto='dhcpv6'
 uci set network.lan_ipv6.ifname='@lan'
@@ -49,6 +50,7 @@ uci set dhcp.lan.dhcpv6='hybrid'
 uci set dhcp.lan.ndp='hybrid'
 # 通告的 IPV6 DNS 服务器
 uci set dhcp.lan.dns='240C::6666'
+# 设置 dhcp wan6
 uci set dhcp.wan6=dhcp
 uci set dhcp.wan6.interface='wan'
 uci set dhcp.wan6.dhcpv6='hybrid'
@@ -187,12 +189,12 @@ sed -i '/option disabled/d' /etc/config/wireless
 sed -i '/set wireless.radio${devidx}.disabled/d' /lib/wifi/mac80211.sh
 
 # 防火墙设置
-echo "iptables -t nat -A POSTROUTING -s $(uci get network.lan.ipaddr)/24 -j MASQUERADE" > /etc/firewall.user
-echo "ip6tables -t nat -A POSTROUTING -s $(uci get network.globals.ula_prefix) -j MASQUERADE" >> /etc/firewall.user
-echo "iptables -t nat -A PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 53" >> /etc/firewall.user
-echo "iptables -t nat -A PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 53" >> /etc/firewall.user
-echo "ip6tables -t nat -A PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 53" >> /etc/firewall.user
-echo "ip6tables -t nat -A PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 53" >> /etc/firewall.user
+echo "iptables -t nat -I POSTROUTING -j MASQUERADE" > /etc/firewall.user
+echo "ip6tables -t nat -I POSTROUTING -j MASQUERADE" >> /etc/firewall.user
+echo "iptables -t nat -I PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 53" >> /etc/firewall.user
+echo "iptables -t nat -I PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 53" >> /etc/firewall.user
+echo "ip6tables -t nat -I PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 53" >> /etc/firewall.user
+echo "ip6tables -t nat -I PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 53" >> /etc/firewall.user
 
 sed -i '/log-facility/d' /etc/dnsmasq.conf
 echo "log-facility=/dev/null" >> /etc/dnsmasq.conf
