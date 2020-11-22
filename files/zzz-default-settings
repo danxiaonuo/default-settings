@@ -19,7 +19,7 @@ uci commit system
 uci set network.lan.ipaddr='10.8.1.1'
 uci set network.lan.netmask='255.255.255.0'
 # IPV6设置
-uci -q delete network.globals.ula_prefix
+uci set network.globals.ula_prefix="ddaa:8888:1111::/48"
 uci set network.lan.ip6assign='64'
 uci set network.lan.ip6hint='0'
 uci set network.lan.ip6ifaceid='::1'
@@ -49,7 +49,7 @@ uci set dhcp.lan.dhcpv6='relay'
 # NDP 代理
 uci set dhcp.lan.ndp='relay'
 # 通告的 IPV6 DNS 服务器
-uci set dhcp.lan.dns='240C::6666'
+uci set dhcp.lan.dns='ddaa:8888:1111::1'
 # 设置 dhcp wan6
 uci set dhcp.wan6=dhcp
 uci set dhcp.wan6.interface='wan'
