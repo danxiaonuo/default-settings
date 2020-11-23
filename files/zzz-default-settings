@@ -1,0 +1,234 @@
+#!/bin/sh
+
+# 修改root密码
+password=$(openssl passwd -1 'admin')
+sed -i "s|root::0:0:99999:7:::|root:$password:0:0:99999:7:::|g" /etc/shadow
+
+# 语言设置
+uci set luci.main.lang=zh_cn
+uci set luci.main.mediaurlbase="/luci-static/argon"
+uci commit luci
+
+uci set system.@system[0].timezone=CST-8
+uci set system.@system[0].zonename=Asia/Shanghai
+uci set system.@system[0].hostname=Uola
+uci commit system
+
+# LAN口设置
+# 设置默认管理IP地址
+uci set network.lan.ipaddr='10.8.1.1'
+uci set network.lan.netmask='255.255.255.0'
+# IPV6设置
+uci set network.globals.ula_prefix="ddaa:8888:1111::/48"
+uci set network.lan.ip6assign='64'
+uci set network.lan.ip6hint='0'
+uci set network.lan.ip6ifaceid='::1'
+# 新增lan_ipv6
+uci set network.lan_ipv6=interface
+uci set network.lan_ipv6.proto='dhcpv6'
+uci set network.lan_ipv6.ifname='@lan'
+uci set network.lan_ipv6.reqaddress='try'
+uci set network.lan_ipv6.reqprefix='auto'
+# 设置wan口主机名称
+uci set network.wan.hostname='danxiaonuo'
+uci commit network
+
+# dhcp设置
+# 启用客户端
+uci set dhcp.lan.start='0'
+# 客户数
+uci set dhcp.lan.limit='255'
+# 租期
+uci set dhcp.lan.leasetime='12h'
+# 使用内置的 IPv6 管理
+uci set dhcp.lan.ra_management='1'
+# 路由通告服务
+uci set dhcp.lan.ra='relay'
+# DHCPv6 服务
+uci set dhcp.lan.dhcpv6='relay'
+# NDP 代理
+uci set dhcp.lan.ndp='relay'
+# 通告的 IPV6 DNS 服务器
+uci set dhcp.lan.dns='ddaa:8888:1111::1'
+# 设置 dhcp wan6
+uci set dhcp.wan6=dhcp
+uci set dhcp.wan6.interface='wan'
+uci set dhcp.wan6.dhcpv6='hybrid'
+uci set dhcp.wan6.ra='hybrid'
+uci set dhcp.wan6.ndp='hybrid'
+uci set dhcp.wan6.master='1'
+# 删除总是通告默认路由
+uci -q dhcp.lan.ra_default > /dev/null 2>&1
+uci commit dhcp
+
+# dnsmasq设置
+uci -q delete dhcp.@dnsmasq[0].server
+uci -q delete dhcp.@dnsmasq[0].filter_aaaa
+uci -q delete dhcp.@dnsmasq[0].resolvfile
+uci add_list dhcp.@dnsmasq[0].noresolv='1'
+uci set dhcp.@dnsmasq[0].cachesize=0
+uci commit dhcp
+
+# firewall设置
+uci set firewall.@defaults[0]=defaults
+uci set firewall.@defaults[0].input='ACCEPT'
+uci set firewall.@defaults[0].output='ACCEPT'
+uci set firewall.@defaults[0].forward='ACCEPT'
+uci set firewall.@defaults[0].flow_offloading='1'
+uci set firewall.@defaults[0].syn_flood='1'
+uci set firewall.@defaults[0].drop_invalid='1'
+uci set firewall.@defaults[0].fullcone='1'
+uci set firewall.@defaults[0].flow_offloading_hw='1'
+uci set firewall.@zone[0]=zone
+uci set firewall.@zone[0].name='lan'
+uci set firewall.@zone[0].network='lan lan_ipv6'
+uci set firewall.@zone[0].input='ACCEPT'
+uci set firewall.@zone[0].output='ACCEPT'
+uci set firewall.@zone[0].forward='ACCEPT'
+uci set firewall.@zone[0].masq='1'
+uci set firewall.@zone[0].mtu_fix='1'
+uci set firewall.@zone[1]=zone
+uci set firewall.@zone[1].name='wan'
+uci set firewall.@zone[1].network='wan wan6'
+uci set firewall.@zone[1].output='ACCEPT'
+uci set firewall.@zone[1].mtu_fix='1'
+uci set firewall.@zone[1].input='ACCEPT'
+uci set firewall.@zone[1].forward='ACCEPT'
+uci set firewall.@zone[1].masq='1'
+uci set firewall.@forwarding[0]=forwarding
+uci set firewall.@forwarding[0].src='lan'
+uci set firewall.@forwarding[0].dest='wan'
+uci commit firewall
+
+# 默认开启网络加速
+uci set flowoffload.@flow[0]=flow
+uci set flowoffload.@flow[0].bbr=1
+uci set flowoffload.@flow[0].flow_offloading_hw=1
+#uci set flowoffload.@flow[0].dns=1
+#uci set flowoffload.@flow[0].dns_server='223.5.5.5,223.6.6.6'
+uci commit flowoffload
+
+# WIFI设置
+uci set wireless.radio0.country='CN'
+uci set wireless.radio0.mu_beamformer='1'
+uci set wireless.radio0.channel='11'
+uci set wireless.radio0.htmode='HT40'
+uci set wireless.default_radio0.ssid='danxiaonuo-2HZ'
+uci set wireless.default_radio0.encryption='psk2'
+uci set wireless.default_radio0.key='password'
+uci set wireless.default_radio0.ieee80211k='1'
+uci set wireless.default_radio0.ieee80211w='1'
+uci set wireless.radio1.country='CN'
+uci set wireless.radio1.mu_beamformer='1'
+uci set wireless.radio1.channel='161'
+uci set wireless.radio1.htmode='VHT80'
+uci set wireless.default_radio1.ssid='danxiaonuo-5HZ'
+uci set wireless.default_radio1.encryption='psk2'
+uci set wireless.default_radio1.key='password'
+uci set wireless.default_radio1.ieee80211k='1'
+uci set wireless.default_radio1.ieee80211w='1'
+uci commit wireless
+
+# fstab设置
+uci set fstab.@global[0].anon_mount=1
+uci commit fstab
+
+# samba设置
+uci set samba.@samba[0].name='danxiaonuo'
+uci set samba.@samba[0].description='danxiaonuo'
+uci commit samba
+
+# mwan3设置
+uci set mwan3.wan.enabled='1'
+uci set mwan3.wan.family='ipv4'
+uci set mwan3.wan.initial_state='online'
+uci set mwan3.wan.track_ip='114.114.114.114'
+uci set mwan3.wan.flush_conntrack='ifup'
+uci set mwan3.wan6.enabled='1'
+uci set mwan3.wan6.family='ipv6'
+uci set mwan3.wan6.initial_state='online'
+uci set mwan3.wan6.track_ip='240C::6666'
+uci set mwan3.wan6.flush_conntrack='ifup'
+uci commit mwan3
+
+# 芝麻开门
+echo 0xDEADBEEF > /etc/config/google_fu_mode
+
+# vim设置
+sed -i 's/mouse=/mouse-=/g' /usr/share/vim/*/defaults.vim
+
+# 删除一些页面
+rm -rf /usr/lib/lua/luci/view/admin_status/index
+rm -f /usr/lib/lua/luci/view/admin_status/index/mwan.htm
+rm -f /usr/lib/lua/luci/view/admin_status/index/upnp.htm
+rm -f /usr/lib/lua/luci/view/admin_status/index/ddns.htm
+rm -f /usr/lib/lua/luci/view/admin_status/index/minidlna.htm
+
+sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/aria2.lua
+sed -i 's/services/nas/g' /usr/lib/lua/luci/view/aria2/overview_status.htm
+sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/hd_idle.lua
+sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/samba.lua
+sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/minidlna.lua
+sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/transmission.lua
+sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/mjpg-streamer.lua
+sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/p910nd.lua
+sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/usb_printer.lua
+sed -i 's/\"services\"/\"nas\"/g' /usr/lib/lua/luci/controller/xunlei.lua
+sed -i 's/services/nas/g'  /usr/lib/lua/luci/view/minidlna_status.htm
+
+#禁用某些可能会自启动且用不上的依赖包服务
+/etc/init.d/php7-fastcgi disable 2>/dev/null
+/etc/init.d/php7-fpm disable 2>/dev/null
+/etc/init.d/softethervpnbridge disable 2>/dev/null
+/etc/init.d/softethervpnserver disable 2>/dev/null
+/etc/init.d/softethervpnclient disable 2>/dev/null
+/etc/init.d/haproxy disable 2>/dev/null
+/etc/init.d/kcptun disable 2>/dev/null
+
+ln -sf /sbin/ip /usr/bin/ip
+
+# 替换源地址
+sed -i 's/http:/https:/g' /etc/opkg/distfeeds.conf
+sed -i "s/# //g" /etc/opkg/distfeeds.conf
+sed -i 's#downloads.openwrt.org#mirrors.cloud.tencent.com/lede#g' /etc/opkg/distfeeds.conf
+sed -i '/openwrt_luci/ { s/snapshots/releases\/19.07.4/g; }'  /etc/opkg/distfeeds.conf
+sed -i '/openwrt_packages/ { s/snapshots/releases\/19.07.4/g; }'  /etc/opkg/distfeeds.conf
+
+# WIFI设置
+sed -i '/option disabled/d' /etc/config/wireless
+sed -i '/set wireless.radio${devidx}.disabled/d' /lib/wifi/mac80211.sh
+
+# 防火墙设置
+echo "iptables -t nat -I POSTROUTING -j MASQUERADE" > /etc/firewall.user
+echo "ip6tables -t nat -I POSTROUTING -j MASQUERADE" >> /etc/firewall.user
+echo "iptables -t nat -I PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 53" >> /etc/firewall.user
+echo "iptables -t nat -I PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 53" >> /etc/firewall.user
+echo "ip6tables -t nat -I PREROUTING -p udp --dport 53 -j REDIRECT --to-ports 53" >> /etc/firewall.user
+echo "ip6tables -t nat -I PREROUTING -p tcp --dport 53 -j REDIRECT --to-ports 53" >> /etc/firewall.user
+
+sed -i '/log-facility/d' /etc/dnsmasq.conf
+echo "log-facility=/dev/null" >> /etc/dnsmasq.conf
+
+sed -i 's/cbi.submit\"] = true/cbi.submit\"] = \"1\"/g' /usr/lib/lua/luci/dispatcher.lua
+
+echo 'hsts=0' > /root/.wgetrc
+
+sed -i '/luciname/d' /usr/lib/lua/luci/version.lua
+echo 'luciname    = "LuCI by Uola"' >> /usr/lib/lua/luci/version.lua
+sed -i '/luciversion/d' /usr/lib/lua/luci/version.lua
+echo 'luciversion = "R1.1.1"' >> /usr/lib/lua/luci/version.lua
+
+#SSH相关设置
+sed -i '1,/PermitRootLogin/{s/.*PermitRootLogin.*/PermitRootLogin yes/}' /etc/ssh/sshd_config
+sed -i '1,/GSSAPIAuthentication/{s/.*GSSAPIAuthentication.*/GSSAPIAuthentication no/}' /etc/ssh/sshd_config
+sed -i '1,/UseDNS/{s/.*UseDNS.*/UseDNS no/}' /etc/ssh/sshd_config
+/etc/init.d/sshd restart
+
+# smartdns自动检测
+chmod 775 /sbin/smartdns.sh
+sed -i '/exit 0/i\# smartdns自动检测\nbash /sbin/smartdns.sh' /etc/rc.local
+
+rm -rf /tmp/luci-modulecache/
+rm -f /tmp/luci-indexcache
+
+exit 0
